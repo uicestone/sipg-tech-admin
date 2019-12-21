@@ -165,7 +165,8 @@ export default {
         confirmButtonClass: "md-button md-success",
         cancelButtonText: "取消",
         cancelButtonClass: "md-button",
-        buttonsStyling: false
+        buttonsStyling: false,
+        width: "26rem"
       });
 
       if (result.value) {
@@ -180,7 +181,8 @@ export default {
           confirmButtonText: "好",
           confirmButtonClass: "md-button md-success",
           buttonsStyling: false,
-          timer: 1500
+          timer: 1500,
+          width: "26rem"
         });
       }
     }

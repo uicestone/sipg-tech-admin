@@ -1,17 +1,18 @@
 .swal2-container .md-button{
-  padding: 12px 30px;
+  padding: 10px 24px;
   min-width: auto;
   margin: 0 5px;
+  font-size: 1rem;
 }
 
 .swal2-popup{
   font-family: Helvetica Neue,Helvetica,Arial,sans-serif !important;
-  width: 31.25rem !important;
   min-height: 190px !important;
 
   .swal2-title{
     line-height: 60px !important;
     margin: 0 !important;
+    font-size: 1.25rem;
   }
 
   .swal2-actions{
