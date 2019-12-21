@@ -96,10 +96,9 @@ export default {
       if (this.$route.params.id === "add") {
         this.machine = (await Machine.save(this.machine)).body;
       } else {
-        this.machine = (await Machine.update(
-          { id: this.$route.params.id },
-          this.machine
-        )).body;
+        this.machine = (
+          await Machine.update({ id: this.$route.params.id }, this.machine)
+        ).body;
       }
       this.$notify({
         message: "保存成功",

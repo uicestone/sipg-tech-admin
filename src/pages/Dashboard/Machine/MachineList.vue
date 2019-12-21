@@ -14,7 +14,7 @@
             :md-sort.sync="currentSort"
             :md-sort-order.sync="currentSortOrder"
             :md-sort-fn="noop"
-            class="paginated-table table-striped table-hover"
+            class="paginated-table table-striped table-hover table-action"
           >
             <md-table-toolbar class="md-layout mb-2">
               <md-field
@@ -51,15 +51,18 @@
               <md-table-cell md-label="型号" md-sort-by="model">{{
                 item.model
               }}</md-table-cell>
-              <md-table-cell md-label="运行时长" md-sort-by="totalHours">{{
-                item.totalHours
-              }}</md-table-cell>
-              <md-table-cell md-label="操作">
+              <md-table-cell
+                md-label="运行时长"
+                md-sort-by="totalHours"
+                @click.native.stop="openUpdateHoursForm(item)"
+                >{{ item.totalHours }}</md-table-cell
+              >
+              <md-table-cell md-label="操作" style="width:100px">
                 <md-button
-                  class="md-just-icon md-danger md-simple"
-                  @click="openUpdateHoursForm(item)"
+                  class="md-just-icon md-primary md-simple"
+                  @click.stop="openUpdateHoursForm(item)"
                 >
-                  <md-icon>close</md-icon>
+                  <md-icon>timer</md-icon>
                 </md-button>
               </md-table-cell>
             </md-table-row>
@@ -83,6 +86,7 @@
 </template>
 
 <script>
+import Swal from "sweetalert2";
 import { Pagination } from "@/components";
 import { Machine } from "@/resources";
 
@@ -142,7 +146,44 @@ export default {
     showCreate() {
       this.$router.push("/machine/add");
     },
-    noop() {}
+    noop() {},
+    async openUpdateHoursForm(machine) {
+      const result = await Swal.fire({
+        title: `${machine.num}当前的总运行时长`,
+        input: "number",
+        inputPlaceholder: machine.totalHours,
+        inputValidator: v => {
+          if (!v) {
+            return "请输入有效的运行时长";
+          }
+          if (v < machine.totalHours) {
+            return "运行时长不能小于原运行时长";
+          }
+        },
+        showCancelButton: true,
+        confirmButtonText: "更新",
+        confirmButtonClass: "md-button md-success",
+        cancelButtonText: "取消",
+        cancelButtonClass: "md-button",
+        buttonsStyling: false
+      });
+
+      if (result.value) {
+        machine.totalHours = result.value;
+        await Machine.update(
+          { id: machine.id },
+          { totalHours: machine.totalHours }
+        );
+        Swal.fire({
+          title: "更新完成",
+          type: "success",
+          confirmButtonText: "好",
+          confirmButtonClass: "md-button md-success",
+          buttonsStyling: false,
+          timer: 1500
+        });
+      }
+    }
   },
   watch: {
     "pagination.currentPage"() {

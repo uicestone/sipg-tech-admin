@@ -294,6 +294,19 @@
   }
 }
 
+.table-action .md-table-content {
+  .md-table-head:last-child {
+    text-align: right;
+  }
+  .md-table-cell:last-child {
+    .md-table-cell-container {
+      justify-content: flex-end;
+      padding-right: 24px;
+    }
+  }
+}
+
+
 @media (max-width: 480px) {
   .paginated-table{
     .md-table-toolbar{
