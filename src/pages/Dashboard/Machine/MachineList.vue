@@ -23,9 +23,8 @@
                 <md-input
                   type="search"
                   clearable
-                  placeholder="搜索"
-                  style="width: 200px;"
-                  v-model="searchQuery.keyword"
+                  placeholder="搜索编号"
+                  v-model="searchQuery.num"
                 >
                 </md-input>
               </md-field>
@@ -49,11 +48,11 @@
               <md-table-cell md-label="类型" md-sort-by="type">{{
                 item.type
               }}</md-table-cell>
-              <md-table-cell md-label="型号" md-sort-by="type">{{
+              <md-table-cell md-label="型号" md-sort-by="model">{{
                 item.model
               }}</md-table-cell>
-              <md-table-cell md-label="运行时长" md-sort-by="hours">{{
-                item.hours
+              <md-table-cell md-label="运行时长" md-sort-by="totalHours">{{
+                item.totalHours
               }}</md-table-cell>
               <md-table-cell md-label="操作">
                 <md-button
@@ -105,7 +104,7 @@ export default {
       queriedData: []
     };
   },
-  mounted() {
+  activated() {
     this.queryData();
   },
   computed: {
@@ -154,7 +153,7 @@ export default {
         clearTimeout(this.searchDelayTimeout);
         this.searchDelayTimeout = setTimeout(() => {
           this.queryData();
-        }, 500);
+        }, 200);
       },
       deep: true
     },

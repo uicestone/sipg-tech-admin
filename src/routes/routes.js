@@ -8,6 +8,8 @@ import AuthLayout from "@/pages/Dashboard/Pages/AuthLayout.vue";
 const User = () => import("@/pages/Dashboard/User/UserProfile.vue");
 const UserList = () => import("@/pages/Dashboard/User/UserList.vue");
 const MachineList = () => import("@/pages/Dashboard/Machine/MachineList.vue");
+const MachineDetail = () =>
+  import("@/pages/Dashboard/Machine/MachineDetail.vue");
 const ConfigList = () => import("@/pages/Dashboard/Config/ConfigList.vue");
 const Config = () => import("@/pages/Dashboard/Config/Config.vue");
 const Login = () => import("@/pages/Dashboard/Pages/Login.vue");
@@ -26,12 +28,12 @@ let machineMenu = {
       meta: {
         keepAlive: true
       }
+    },
+    {
+      path: ":id",
+      name: "机械详情",
+      component: MachineDetail
     }
-    // {
-    //   path: ":id",
-    //   name: "券码详情",
-    //   component: Machine
-    // }
   ]
 };
 
