@@ -90,6 +90,7 @@
                 v-for="item in machine.careItems"
                 :key="item.name"
                 @click="openCareForm(item)"
+                style="cursor:pointer"
                 :class="{
                   'table-warning': !item.cycleLeft || item.cycleLeft < 0
                 }"
@@ -99,7 +100,7 @@
                   >每{{ item.cycle }}{{ item.cycleUnit }}</md-table-cell
                 >
                 <md-table-cell md-label="剩余"
-                  >{{ item.cycleLeft >= 0 ? "+" : "-"
+                  >{{ item.cycleLeft >= 0 ? "+" : ""
                   }}{{ item.cycleLeft + item.cycleUnit }}</md-table-cell
                 >
               </md-table-row>

@@ -42,7 +42,7 @@
               slot-scope="{ item }"
               @click="showDetail(item)"
             >
-              <md-table-cell md-label="编号" md-sort-by="type">{{
+              <md-table-cell md-label="编号" md-sort-by="num">{{
                 item.num
               }}</md-table-cell>
               <md-table-cell md-label="类型" md-sort-by="type">{{
