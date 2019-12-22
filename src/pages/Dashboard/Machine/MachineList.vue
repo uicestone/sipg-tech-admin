@@ -57,6 +57,11 @@
                 @click.native.stop="openUpdateHoursForm(item)"
                 >{{ item.totalHours }}</md-table-cell
               >
+              <md-table-cell
+                md-label="保养需求"
+                md-sort-by="careItems.cycleLeft"
+                >{{ item.careItems | dueItems }}</md-table-cell
+              >
               <md-table-cell md-label="操作" style="width:100px">
                 <md-button
                   class="md-just-icon md-primary md-simple"
@@ -184,6 +189,7 @@ export default {
           timer: 1500,
           width: "26rem"
         });
+        this.queryData();
       }
     }
   },
@@ -205,6 +211,14 @@ export default {
     },
     currentSortOrder() {
       this.queryData();
+    }
+  },
+  filters: {
+    dueItems(items) {
+      return items
+        .filter(item => item.cycleLeft < 0)
+        .map(item => item.name + item.cycleLeft)
+        .join("、");
     }
   }
 };

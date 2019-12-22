@@ -75,11 +75,44 @@
           </md-card>
         </form>
       </div>
+      <div class="md-layout-item md-medium-size-100 md-size-33 mx-auto">
+        <md-card>
+          <md-card-header class="md-card-header-icon md-card-header-green">
+            <div class="card-icon">
+              <md-icon>new_releases</md-icon>
+            </div>
+            <h4 class="title">保养项目</h4>
+          </md-card-header>
+
+          <md-card-content class="md-layout">
+            <md-table class="table-full-width">
+              <md-table-row
+                v-for="item in machine.careItems"
+                :key="item.name"
+                @click="openCareForm(item)"
+                :class="{
+                  'table-warning': !item.cycleLeft || item.cycleLeft < 0
+                }"
+              >
+                <md-table-cell md-label="项目">{{ item.name }}</md-table-cell>
+                <md-table-cell md-label="周期"
+                  >每{{ item.cycle }}{{ item.cycleUnit }}</md-table-cell
+                >
+                <md-table-cell md-label="剩余"
+                  >{{ item.cycleLeft >= 0 ? "+" : "-"
+                  }}{{ item.cycleLeft + item.cycleUnit }}</md-table-cell
+                >
+              </md-table-row>
+            </md-table>
+          </md-card-content>
+        </md-card>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import Swal from "sweetalert2";
 import { Machine } from "@/resources";
 
 export default {
@@ -110,6 +143,53 @@ export default {
       if (this.$route.params.id === "add") {
         this.$router.replace(`/machine/${this.machine.id}`);
       }
+    },
+    async openCareForm(item) {
+      const result = await Swal.fire({
+        title: `${this.machine.num}更新保养状态`,
+        html: `<p>保养项目：${item.name}</p><p>请输入保养时运行时长</p>`,
+        input: "number",
+        inputPlaceholder: this.machine.totalHours,
+        inputValidator: v => {
+          if (!v) {
+            return "请输入有效的运行时长";
+          }
+          if (v > this.machine.totalHours) {
+            return "保养运行时长不能大于最新运行时长";
+          }
+        },
+        showCancelButton: true,
+        confirmButtonText: "更新",
+        confirmButtonClass: "md-button md-success",
+        cancelButtonText: "取消",
+        cancelButtonClass: "md-button",
+        buttonsStyling: false,
+        width: "26rem"
+      });
+
+      if (result.value) {
+        this.machine.careItems.find(i => {
+          if (i.name === item.name) {
+            i.last = result.value;
+            return true;
+          }
+        });
+        this.machine = (
+          await Machine.update(
+            { id: this.machine.id },
+            { careItems: this.machine.careItems }
+          )
+        ).body;
+        Swal.fire({
+          title: "更新完成",
+          type: "success",
+          confirmButtonText: "好",
+          confirmButtonClass: "md-button md-success",
+          buttonsStyling: false,
+          timer: 1500,
+          width: "26rem"
+        });
+      }
     }
   },
   async mounted() {
@@ -120,4 +200,13 @@ export default {
 };
 </script>
 <style lang="scss">
+.md-table.table-full-width {
+  width: calc(100% + 40px);
+  table {
+    width: calc(100% + 1px);
+  }
+}
+.md-table-row.due {
+  background-color: #fce4ec; // pink-100
+}
 </style>

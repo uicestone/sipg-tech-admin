@@ -113,7 +113,7 @@ export default {
       totalCredit: null
     };
   },
-  mounted() {
+  activated() {
     this.queryData();
   },
   computed: {
