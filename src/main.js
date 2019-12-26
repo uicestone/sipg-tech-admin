@@ -97,6 +97,22 @@ Vue.filter("currency", value => {
   return "¥ " + (+value).toFixed(2);
 });
 
+Vue.filter("careItemUnit", (cycleType, cycle, every) => {
+  const map = {
+    month: "个月",
+    runHour: "运行小时",
+    onDemand: "按需"
+  };
+
+  const cycleUnitLabel = map[cycleType];
+
+  if (every && cycle) {
+    return "每" + cycle + cycleUnitLabel;
+  } else {
+    return cycleUnitLabel;
+  }
+});
+
 /* eslint-disable no-new */
 new Vue({
   el: "#app",

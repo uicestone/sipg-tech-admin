@@ -21,14 +21,38 @@
                       type="number"
                       min="1000"
                       max="9999"
+                      required
                     ></md-input>
                   </md-field>
                 </div>
                 <div class="md-layout-item md-small-size-100 md-size-50">
                   <md-field>
-                    <label>描述</label>
-                    <md-input v-model="machine.desc"></md-input>
+                    <label>型号</label>
+                    <md-input
+                      v-model="machine.model"
+                      type="text"
+                      required
+                    ></md-input>
                   </md-field>
+                </div>
+                <div class="md-layout-item md-small-size-100 md-size-50">
+                  <md-field>
+                    <label>总运行时间</label>
+                    <md-input
+                      v-model="machine.totalHours"
+                      type="number"
+                      required
+                    ></md-input>
+                    <span class="md-suffix">小时</span>
+                  </md-field>
+                </div>
+                <div class="md-layout-item md-small-size-100 md-size-50">
+                  <md-datepicker
+                    v-model="machine.firstDay"
+                    :md-model-type="String"
+                    md-immediately
+                    ><label>启用日期</label></md-datepicker
+                  >
                 </div>
                 <div class="md-layout-item md-small-size-100 md-size-50">
                   <md-field>
@@ -45,24 +69,14 @@
                 </div>
                 <div class="md-layout-item md-small-size-100 md-size-50">
                   <md-field>
-                    <label>总运行时间</label>
-                    <md-input
-                      v-model="machine.totalHours"
-                      type="number"
-                    ></md-input>
-                    <span class="md-suffix">小时</span>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-small-size-100 md-size-50">
-                  <md-field>
                     <label>厂牌</label>
                     <md-input v-model="machine.brand" type="text"></md-input>
                   </md-field>
                 </div>
-                <div class="md-layout-item md-small-size-100 md-size-50">
+                <div class="md-layout-item md-small-size-100 md-size-100">
                   <md-field>
-                    <label>型号</label>
-                    <md-input v-model="machine.model" type="text"></md-input>
+                    <label>描述</label>
+                    <md-input v-model="machine.desc"></md-input>
                   </md-field>
                 </div>
               </div>
@@ -75,7 +89,7 @@
           </md-card>
         </form>
       </div>
-      <div class="md-layout-item md-medium-size-100 md-size-33 mx-auto">
+      <div class="md-layout-item md-medium-size-100 md-size-66 mx-auto">
         <md-card>
           <md-card-header class="md-card-header-icon md-card-header-green">
             <div class="card-icon">
@@ -95,13 +109,15 @@
                   'table-warning': !item.cycleLeft || item.cycleLeft < 0
                 }"
               >
-                <md-table-cell md-label="项目">{{ item.name }}</md-table-cell>
-                <md-table-cell md-label="周期"
-                  >每{{ item.cycle }}{{ item.cycleUnit }}</md-table-cell
-                >
+                <md-table-cell md-label="项目" style="width:50%">{{
+                  item.name
+                }}</md-table-cell>
+                <md-table-cell md-label="周期">{{
+                  item.cycleType | careItemUnit(item.cycle, true)
+                }}</md-table-cell>
                 <md-table-cell md-label="剩余"
-                  >{{ item.cycleLeft >= 0 ? "+" : ""
-                  }}{{ item.cycleLeft + item.cycleUnit }}</md-table-cell
+                  >{{ item.cycleLeft > 0 ? "+" : "" }}{{ item.cycleLeft
+                  }}{{ item.cycleType | careItemUnit }}</md-table-cell
                 >
               </md-table-row>
             </md-table>
@@ -114,6 +130,7 @@
 
 <script>
 import Swal from "sweetalert2";
+import moment from "moment";
 import { Machine } from "@/resources";
 
 export default {
@@ -148,17 +165,34 @@ export default {
     async openCareForm(item) {
       const result = await Swal.fire({
         title: `${this.machine.num}更新保养状态`,
-        html: `<p>保养项目：${item.name}</p><p>请输入保养时运行时长</p>`,
-        input: "number",
-        inputPlaceholder: this.machine.totalHours,
-        inputValidator: v => {
-          if (!v) {
-            return "请输入有效的运行时长";
-          }
-          if (v > this.machine.totalHours) {
-            return "保养运行时长不能大于最新运行时长";
-          }
-        },
+        html:
+          item.cycleType === "runHour"
+            ? `<p>保养项目：${item.name}</p><p>请输入保养时运行时长</p>`
+            : `<p>保养项目：${item.name}</p><p>请输入保养时日期</p>`,
+        input: item.cycleType === "runHour" ? "number" : "text",
+        inputPlaceholder:
+          item.cycleType === "runHour"
+            ? this.machine.totalHours
+            : moment().format("YYYY-MM-DD"),
+        inputValue:
+          item.cycleType === "runHour"
+            ? this.machine.totalHours
+            : moment().format("YYYY-MM-DD"),
+        inputValidator:
+          item.cycleType === "runHour"
+            ? v => {
+                if (!v) {
+                  return "请输入有效的运行时长";
+                }
+                if (v > this.machine.totalHours) {
+                  return "保养运行时长不能大于最新运行时长";
+                }
+              }
+            : v => {
+                if (!v || !v.match(/\d{4}-\d{2}-\d{2}/)) {
+                  return "请输入有效的日期";
+                }
+              },
         showCancelButton: true,
         confirmButtonText: "更新",
         confirmButtonClass: "md-button md-success",
