@@ -28,11 +28,17 @@
                 <div class="md-layout-item md-small-size-100 md-size-50">
                   <md-field>
                     <label>型号</label>
-                    <md-input
+                    <md-select
                       v-model="machine.model"
-                      type="text"
-                      required
-                    ></md-input>
+                      @keydown.enter.prevent=""
+                    >
+                      <md-option
+                        v-for="model in models"
+                        :key="model.name"
+                        :value="model.name"
+                        >{{ model.name }}</md-option
+                      >
+                    </md-select>
                   </md-field>
                 </div>
                 <div class="md-layout-item md-small-size-100 md-size-50">
@@ -131,11 +137,12 @@
 <script>
 import Swal from "sweetalert2";
 import moment from "moment";
-import { Machine } from "@/resources";
+import { Machine, Model } from "@/resources";
 
 export default {
   data() {
     return {
+      models: [],
       machine: {
         name: "",
         roles: []
@@ -228,6 +235,7 @@ export default {
     }
   },
   async mounted() {
+    this.models = (await Model.get({ limit: false })).body;
     if (this.$route.params.id !== "add") {
       this.machine = (await Machine.get({ id: this.$route.params.id })).body;
     }
