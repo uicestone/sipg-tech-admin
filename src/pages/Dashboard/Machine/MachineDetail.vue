@@ -1,129 +1,154 @@
 <template>
   <div class="content">
     <div class="md-layout">
-      <div class="md-layout-item md-medium-size-100 md-size-66 mx-auto">
-        <form @submit.prevent="save">
+      <div class="md-layout-item md-medium-size-100 md-size-66 md-layout">
+        <div class="md-layout-item md-medium-size-100 md-size-100 mx-auto">
+          <form @submit.prevent="save">
+            <md-card>
+              <md-card-header
+                class="md-card-header-icon md-card-header-primary"
+              >
+                <div class="card-icon">
+                  <md-icon>local_shipping</md-icon>
+                </div>
+                <h4 class="title">{{ machine.num }}</h4>
+              </md-card-header>
+
+              <md-card-content class="md-layout">
+                <div class="md-layout-item md-layout md-alignment-vertical">
+                  <div class="md-layout-item md-small-size-100 md-size-50">
+                    <md-field>
+                      <label>编号</label>
+                      <md-input
+                        v-model="machine.num"
+                        type="number"
+                        min="1000"
+                        max="9999"
+                        required
+                      ></md-input>
+                    </md-field>
+                  </div>
+                  <div class="md-layout-item md-small-size-100 md-size-50">
+                    <md-field>
+                      <label>型号</label>
+                      <md-select
+                        v-model="machine.model"
+                        @keydown.enter.prevent=""
+                      >
+                        <md-option
+                          v-for="model in models"
+                          :key="model.name"
+                          :value="model.name"
+                          >{{ model.name }}</md-option
+                        >
+                      </md-select>
+                    </md-field>
+                  </div>
+                  <div class="md-layout-item md-small-size-100 md-size-50">
+                    <md-datepicker
+                      v-model="machine.firstDay"
+                      :md-model-type="String"
+                      md-immediately
+                      ><label>启用日期</label></md-datepicker
+                    >
+                  </div>
+                  <div class="md-layout-item md-small-size-100 md-size-50">
+                    <md-field>
+                      <label>总运行时间</label>
+                      <md-input
+                        v-model="machine.totalHours"
+                        type="number"
+                        required
+                      ></md-input>
+                      <span class="md-suffix">小时</span>
+                    </md-field>
+                  </div>
+                  <div class="md-layout-item md-small-size-100 md-size-50">
+                    <md-field>
+                      <label>厂牌</label>
+                      <md-input v-model="machine.brand" type="text"></md-input>
+                    </md-field>
+                  </div>
+                  <div class="md-layout-item md-small-size-100 md-size-50">
+                    <md-field>
+                      <label>描述</label>
+                      <md-input v-model="machine.desc"></md-input>
+                    </md-field>
+                  </div>
+                </div>
+                <div class="md-layout-item md-size-100 text-right">
+                  <md-button type="submit" class="md-raised md-primary mt-4"
+                    >保存</md-button
+                  >
+                </div>
+              </md-card-content>
+            </md-card>
+          </form>
+        </div>
+        <div class="md-layout-item md-medium-size-100 md-size-100 mx-auto">
           <md-card>
-            <md-card-header class="md-card-header-icon md-card-header-primary">
+            <md-card-header class="md-card-header-icon md-card-header-green">
               <div class="card-icon">
-                <md-icon>local_shipping</md-icon>
+                <md-icon>new_releases</md-icon>
               </div>
-              <h4 class="title">{{ machine.num }}</h4>
+              <h4 class="title">保养项目</h4>
             </md-card-header>
 
             <md-card-content class="md-layout">
-              <div class="md-layout-item md-layout md-alignment-vertical">
-                <div class="md-layout-item md-small-size-100 md-size-50">
-                  <md-field>
-                    <label>编号</label>
-                    <md-input
-                      v-model="machine.num"
-                      type="number"
-                      min="1000"
-                      max="9999"
-                      required
-                    ></md-input>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-small-size-100 md-size-50">
-                  <md-field>
-                    <label>型号</label>
-                    <md-select
-                      v-model="machine.model"
-                      @keydown.enter.prevent=""
-                    >
-                      <md-option
-                        v-for="model in models"
-                        :key="model.name"
-                        :value="model.name"
-                        >{{ model.name }}</md-option
-                      >
-                    </md-select>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-small-size-100 md-size-50">
-                  <md-field>
-                    <label>总运行时间</label>
-                    <md-input
-                      v-model="machine.totalHours"
-                      type="number"
-                      required
-                    ></md-input>
-                    <span class="md-suffix">小时</span>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-small-size-100 md-size-50">
-                  <md-datepicker
-                    v-model="machine.firstDay"
-                    :md-model-type="String"
-                    md-immediately
-                    ><label>启用日期</label></md-datepicker
-                  >
-                </div>
-                <div class="md-layout-item md-small-size-100 md-size-50">
-                  <md-field>
-                    <label>种类</label>
-                    <md-select v-model="machine.type" @keydown.enter.prevent="">
-                      <md-option
-                        v-for="type in ['平板', '叉车', '吊车', '门机', '皮卡']"
-                        :key="type"
-                        :value="type"
-                        >{{ type }}</md-option
-                      >
-                    </md-select>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-small-size-100 md-size-50">
-                  <md-field>
-                    <label>厂牌</label>
-                    <md-input v-model="machine.brand" type="text"></md-input>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-small-size-100 md-size-100">
-                  <md-field>
-                    <label>描述</label>
-                    <md-input v-model="machine.desc"></md-input>
-                  </md-field>
-                </div>
-              </div>
-              <div class="md-layout-item md-size-100 text-right">
-                <md-button type="submit" class="md-raised md-primary mt-4"
-                  >保存</md-button
+              <md-table class="table-full-width">
+                <md-table-row
+                  v-for="item in sorted"
+                  :key="item.name"
+                  @click="openCareForm(item)"
+                  style="cursor:pointer"
+                  :class="{
+                    'table-warning':
+                      !item.cycleAlertLeft ||
+                      (item.cycleLeft > 0 && item.cycleAlertLeft <= 0),
+                    'table-danger': item.cycleLeft <= 0
+                  }"
                 >
-              </div>
+                  <md-table-cell md-label="类目">{{
+                    item.category
+                  }}</md-table-cell>
+                  <md-table-cell md-label="项目" style="width:30%">{{
+                    item.name
+                  }}</md-table-cell>
+                  <md-table-cell md-label="周期">{{
+                    item | careItemCycle
+                  }}</md-table-cell>
+                  <md-table-cell md-label="上次">{{
+                    item.last || "-"
+                  }}</md-table-cell>
+                  <md-table-cell md-label="剩余">{{
+                    item | careItemLeft
+                  }}</md-table-cell>
+                </md-table-row>
+              </md-table>
             </md-card-content>
           </md-card>
-        </form>
+        </div>
       </div>
-      <div class="md-layout-item md-medium-size-100 md-size-66 mx-auto">
-        <md-card>
+      <div class="md-layout-item md-medium-size-100 md-size-33 mx-auto">
+        <md-card v-sticky>
           <md-card-header class="md-card-header-icon md-card-header-green">
             <div class="card-icon">
-              <md-icon>new_releases</md-icon>
+              <md-icon>timer</md-icon>
             </div>
-            <h4 class="title">保养项目</h4>
+            <h4 class="title">保养记录</h4>
           </md-card-header>
 
           <md-card-content class="md-layout">
             <md-table class="table-full-width">
-              <md-table-row
-                v-for="item in machine.careItems"
-                :key="item.name"
-                @click="openCareForm(item)"
-                style="cursor:pointer"
-                :class="{
-                  'table-warning': !item.cycleLeft || item.cycleLeft < 0
-                }"
-              >
-                <md-table-cell md-label="项目" style="width:50%">{{
-                  item.name
-                }}</md-table-cell>
-                <md-table-cell md-label="周期">{{
-                  item.cycleType | careItemUnit(item.cycle, true)
-                }}</md-table-cell>
-                <md-table-cell md-label="剩余"
-                  >{{ item.cycleLeft > 0 ? "+" : "" }}{{ item.cycleLeft
-                  }}{{ item.cycleType | careItemUnit }}</md-table-cell
+              <md-table-row v-for="record in careRecords" :key="record.id">
+                <md-table-cell md-label="项目"
+                  ><b>{{ record.careItem.category }}</b
+                  ><br />{{ record.careItem.name }}</md-table-cell
+                >
+                <md-table-cell md-label="日期" style="min-width:90px"
+                  >{{ record.date }}<br />{{
+                    record.operator.name
+                  }}</md-table-cell
                 >
               </md-table-row>
             </md-table>
@@ -137,17 +162,26 @@
 <script>
 import Swal from "sweetalert2";
 import moment from "moment";
-import { Machine, Model } from "@/resources";
+import VueSticky from "vue-sticky";
+import { CareRecord, Machine, Model } from "@/resources";
 
 export default {
+  directives: {
+    sticky: VueSticky
+  },
   data() {
     return {
       models: [],
       machine: {
-        name: "",
-        roles: []
-      }
+        careItems: []
+      },
+      careRecords: []
     };
+  },
+  computed: {
+    sorted() {
+      return this.machine.careItems.sort((a, b) => b.alertLevel - a.alertLevel);
+    }
   },
   methods: {
     async save() {
@@ -174,8 +208,8 @@ export default {
         title: `${this.machine.num}更新保养状态`,
         html:
           item.cycleType === "runHour"
-            ? `<p>保养项目：${item.name}</p><p>请输入保养时运行时长</p>`
-            : `<p>保养项目：${item.name}</p><p>请输入保养时日期</p>`,
+            ? `<p>保养项目：${item.name}</p><p>请输入保养时运行时长：</p>`
+            : `<p>保养项目：${item.name}</p><p>请输入保养时日期：</p>`,
         input: item.cycleType === "runHour" ? "number" : "text",
         inputPlaceholder:
           item.cycleType === "runHour"
@@ -222,6 +256,7 @@ export default {
             { careItems: this.machine.careItems }
           )
         ).body;
+        this.getCareRecords();
         Swal.fire({
           title: "更新完成",
           type: "success",
@@ -232,12 +267,18 @@ export default {
           width: "26rem"
         });
       }
+    },
+    async getCareRecords() {
+      this.careRecords = (
+        await CareRecord.get({ machine: this.machine.id })
+      ).body;
     }
   },
   async mounted() {
     this.models = (await Model.get({ limit: false })).body;
     if (this.$route.params.id !== "add") {
       this.machine = (await Machine.get({ id: this.$route.params.id })).body;
+      this.getCareRecords();
     }
   }
 };
@@ -245,11 +286,5 @@ export default {
 <style lang="scss">
 .md-table.table-full-width {
   width: calc(100% + 40px);
-  table {
-    width: calc(100% + 1px);
-  }
-}
-.md-table-row.due {
-  background-color: #fce4ec; // pink-100
 }
 </style>

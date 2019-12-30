@@ -97,19 +97,34 @@ Vue.filter("currency", value => {
   return "¥ " + (+value).toFixed(2);
 });
 
-Vue.filter("careItemUnit", (cycleType, cycle, every) => {
+Vue.filter("careItemCycle", item => {
   const map = {
     month: "个月",
     runHour: "运行小时",
     onDemand: "按需"
   };
 
+  const { cycle, cycleType } = item;
+
   const cycleUnitLabel = map[cycleType];
 
-  if (every && cycle) {
+  if (cycle) {
     return "每" + cycle + cycleUnitLabel;
   } else {
     return cycleUnitLabel;
+  }
+});
+
+Vue.filter("careItemLeft", (item, alert = false) => {
+  const { cycleType, cycleLeft, cycleAlertLeft } = item;
+  const left = alert ? cycleAlertLeft : cycleLeft;
+  switch (cycleType) {
+    case "month":
+      return (left > 0 ? "+" : "") + Math.round(left * 30.42) + "天";
+    case "runHour":
+      return (left > 0 ? "+" : "") + left + "小时";
+    case "onDemand":
+      return "按需";
   }
 });
 

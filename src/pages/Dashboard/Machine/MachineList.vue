@@ -218,7 +218,7 @@ export default {
       return items
         .filter(item => item.cycleLeft < 0)
         .map(item => item.name + item.cycleLeft)
-        .join("、");
+        .join("<br>");
     }
   }
 };
