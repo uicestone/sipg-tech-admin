@@ -130,7 +130,7 @@
         </div>
       </div>
       <div class="md-layout-item md-medium-size-100 md-size-33 mx-auto">
-        <md-card v-sticky>
+        <md-card v-sticky="{ stickyTop: 25 }">
           <md-card-header class="md-card-header-icon md-card-header-green">
             <div class="card-icon">
               <md-icon>timer</md-icon>

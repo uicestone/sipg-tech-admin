@@ -17,18 +17,66 @@
             class="paginated-table table-striped table-hover table-action"
           >
             <md-table-toolbar class="md-layout mb-2">
-              <md-field
-                class="md-layout md-layout-item md-size-20 md-xsmall-size-100"
-              >
-                <md-input
-                  type="search"
-                  clearable
-                  placeholder="搜索编号"
-                  v-model="searchQuery.num"
+              <div class="md-layout-item md-layout">
+                <md-field
+                  class="md-layout md-layout-item md-size-20 md-xsmall-size-100"
                 >
-                </md-input>
-              </md-field>
+                  <md-input
+                    type="search"
+                    clearable
+                    placeholder="搜索编号"
+                    v-model="searchQuery.num"
+                  >
+                  </md-input>
+                </md-field>
 
+                <md-field
+                  class="md-layout md-layout-item md-size-20 md-xsmall-size-100"
+                >
+                  <md-select v-model="searchQuery.model" placeholder="车型">
+                    <md-option
+                      v-for="model in models"
+                      :key="model.id"
+                      :value="model.name"
+                      >{{ model.name }}</md-option
+                    >
+                  </md-select>
+                </md-field>
+
+                <md-field
+                  class="md-layout md-layout-item md-size-20 md-xsmall-size-100"
+                >
+                  <md-autocomplete
+                    autocomplete="off"
+                    v-model="searchQuery.careItem"
+                    :md-options="careItemSlugs"
+                    @md-opened="getModels"
+                  >
+                    <label>保养项目</label>
+                    <template
+                      slot="md-autocomplete-item"
+                      slot-scope="{ item, term }"
+                    >
+                      <md-highlight-text :md-term="term">{{
+                        item
+                      }}</md-highlight-text>
+                    </template>
+                  </md-autocomplete>
+                </md-field>
+
+                <md-field
+                  class="md-layout md-layout-item md-size-20 md-xsmall-size-100"
+                >
+                  <md-select
+                    v-model="searchQuery.alertType"
+                    placeholder="提示类型"
+                  >
+                    <md-option value="">所有</md-option>
+                    <md-option value="alert">警告</md-option>
+                    <md-option value="expired">超期</md-option>
+                  </md-select>
+                </md-field>
+              </div>
               <div class="toolbar-actions">
                 <md-button class="md-primary" @click="showCreate">
                   添加机械
@@ -45,9 +93,6 @@
               <md-table-cell md-label="编号" md-sort-by="num">{{
                 item.num
               }}</md-table-cell>
-              <md-table-cell md-label="类型" md-sort-by="type">{{
-                item.type
-              }}</md-table-cell>
               <md-table-cell md-label="型号" md-sort-by="model">{{
                 item.model
               }}</md-table-cell>
@@ -60,8 +105,29 @@
               <md-table-cell
                 md-label="保养需求"
                 md-sort-by="careItems.cycleLeft"
-                >{{ item.careItems | dueItems }}</md-table-cell
+                style="width:50%"
               >
+                <div
+                  v-for="item in item.careItems.filter(
+                    i => i.cycle && i.cycleAlertLeft <= 0 && i.cycleLeft > 0
+                  )"
+                  :key="item.name"
+                  class="text-warning"
+                >
+                  <b>{{ item.category }}：</b>
+                  <span>{{ item.name }}</span>
+                </div>
+                <div
+                  v-for="item in item.careItems.filter(
+                    i => i.cycle && i.cycleLeft <= 0
+                  )"
+                  :key="item.name"
+                  class="text-danger"
+                >
+                  <b>{{ item.category }}：</b>
+                  <span>{{ item.name }}</span>
+                </div>
+              </md-table-cell>
               <md-table-cell md-label="操作" style="width:100px">
                 <md-button
                   class="md-just-icon md-primary md-simple"
@@ -93,7 +159,7 @@
 <script>
 import Swal from "sweetalert2";
 import { Pagination } from "@/components";
-import { Machine } from "@/resources";
+import { Machine, Model } from "@/resources";
 
 export default {
   components: {
@@ -108,13 +174,16 @@ export default {
         currentPage: 1,
         total: 0
       },
-      searchQuery: {},
+      searchQuery: { careItem: "" },
       searchDelayTimeout: null,
-      queriedData: []
+      queriedData: [],
+      models: [],
+      careItemSlugs: []
     };
   },
   activated() {
     this.queryData();
+    this.getModels();
   },
   computed: {
     query() {
@@ -191,6 +260,16 @@ export default {
         });
         this.queryData();
       }
+    },
+    async getModels() {
+      this.models = (await Model.get()).body;
+      const careItemSlugsSet = new Set();
+      this.models.forEach(model => {
+        model.careItems.forEach(item => {
+          careItemSlugsSet.add(item.category + "-" + item.name);
+        });
+      });
+      this.careItemSlugs = Array.from(careItemSlugsSet.values());
     }
   },
   watch: {
@@ -214,11 +293,11 @@ export default {
     }
   },
   filters: {
-    dueItems(items) {
-      return items
-        .filter(item => item.cycleLeft < 0)
-        .map(item => item.name + item.cycleLeft)
-        .join("<br>");
+    alertItems(items) {
+      return items.filter(item => item.cycleAlertLeft < 0);
+    },
+    expiredItems(items) {
+      return items.filter(item => item.cycleLeft < 0);
     }
   }
 };
