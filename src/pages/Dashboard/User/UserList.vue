@@ -109,8 +109,7 @@ export default {
       },
       searchQuery: {},
       searchDelayTimeout: null,
-      queriedData: [],
-      totalCredit: null
+      queriedData: []
     };
   },
   activated() {
@@ -144,7 +143,6 @@ export default {
       const response = await User.get(this.query);
       this.queriedData = response.body;
       this.pagination.total = Number(response.headers.map["items-total"][0]);
-      this.totalCredit = Number(response.headers.map["total-credit"][0]);
     },
     showDetail(item) {
       this.$router.push(`/user/${item.id}`);

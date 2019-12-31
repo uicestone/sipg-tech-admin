@@ -62,6 +62,7 @@
 </template>
 <script>
 /* eslint-disable no-new */
+import Swal from "sweetalert2";
 import PerfectScrollbar from "perfect-scrollbar";
 import "perfect-scrollbar/css/perfect-scrollbar.css";
 
@@ -84,6 +85,7 @@ import TopNavbar from "./TopNavbar.vue";
 import ContentFooter from "./ContentFooter.vue";
 // import MobileMenu from "./Extra/MobileMenu.vue";
 import UserMenu from "./Extra/UserMenu.vue";
+import { Machine } from "@/resources";
 
 export default {
   components: {
@@ -113,7 +115,7 @@ export default {
       }
     }
   },
-  mounted() {
+  async mounted() {
     let docClasses = document.body.classList;
     let isWindows = navigator.platform.startsWith("Win");
     if (isWindows) {
@@ -125,6 +127,19 @@ export default {
       docClasses.add("perfect-scrollbar-on");
     } else {
       docClasses.add("perfect-scrollbar-off");
+    }
+
+    const careExpiredMachines = (
+      await Machine.get({ alertType: "expired", limit: false })
+    ).body;
+
+    if (careExpiredMachines.length) {
+      Swal.fire({
+        title: "以下机械已超过保养周期，需要立即进行保养！",
+        text: careExpiredMachines.map(m => m.num).join("、"),
+        confirmButtonClass: "md-button md-success",
+        buttonsStyling: false
+      });
     }
   },
   watch: {

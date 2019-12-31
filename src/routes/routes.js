@@ -1,5 +1,6 @@
-import DashboardLayout from "@/pages/Dashboard/Layout/DashboardLayout.vue";
-import AuthLayout from "@/pages/Dashboard/Pages/AuthLayout.vue";
+const DashboardLayout = () =>
+  import("@/pages/Dashboard/Layout/DashboardLayout.vue");
+const AuthLayout = () => import("@/pages/Dashboard/Pages/AuthLayout.vue");
 
 // Dashboard pages
 // import Dashboard from "@/pages/Dashboard/Dashboard.vue";
